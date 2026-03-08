@@ -3,28 +3,24 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const connectDB = require("./config/db");
+const Url = require("./models/Url");
 
 const app = express();
 
+// connect database
 connectDB();
 
 app.use(cors());
 app.use(express.json());
+
+// API routes
 app.use("/api/url", require("./routes/urlRoutes"));
 
 app.get("/", (req, res) => {
   res.send("URL Shortener API running");
 });
 
-const PORT = process.env.PORT || 5000;
-
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
-
-
-const Url = require("./models/Url");
-
+// redirect route
 app.get("/:shortId", async (req, res) => {
   try {
     const { shortId } = req.params;
@@ -32,13 +28,9 @@ app.get("/:shortId", async (req, res) => {
     const url = await Url.findOne({ shortId });
 
     if (url) {
-
-      // increase click count
-      url.clicks=url.clicks+1;
-
+      url.clicks = url.clicks + 1;
       await url.save();
 
-      // redirect user
       return res.redirect(url.originalUrl);
     }
 
@@ -47,4 +39,11 @@ app.get("/:shortId", async (req, res) => {
   } catch (error) {
     res.status(500).send("Server error");
   }
+});
+
+// start server
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
