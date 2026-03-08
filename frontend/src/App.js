@@ -8,7 +8,7 @@ function App() {
   const generateShortUrl = async () => {
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/url/shorten",
+        "https://mern-url-shortener-6hbv.onrender.com/api/url/shorten",
         { originalUrl: url }
       );
 
